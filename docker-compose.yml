@@ -1,0 +1,65 @@
+version: '3'
+services:
+
+  app:
+    build: .
+    image: digitalocean.com/php
+    container_name: biblioteca-php
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+    working_dir: /var/www
+    volumes:
+      - ./src/:/var/www
+      - ./environment/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: biblioteca-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8091:80"
+    volumes:
+      - ./src/:/var/www
+      - ./environment/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+  db:
+    build: ./mysql
+    container_name: biblioteca-db
+    ports:
+      - "33062:3306"
+    volumes:
+      - ./mysql/dump:/dump
+    environment:
+      MYSQL_ROOT_PASSWORD: biblioteca
+      MYSQL_DATABASE: biblioteca
+      MYSQL_USER: developer
+      MYSQL_PASSWORD: biblioteca
+    networks:
+      - app-network
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: biblioteca-phpmyadmin
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8083:80"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
