@@ -13,15 +13,16 @@
                 </nav>
 
                 <div class="card-body">
-                    <form action="{{ route('book.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('book.update', $book) }}" method="POST" enctype="multipart/form-data">
                         {{ csrf_field() }}
+                        {{ method_field('PUT') }}
                         <div class="form-group">
                             <label for="title">Title</label>
-                            <input type="text" class="form-control" name="title" id="title" aria-describedby="title">
+                            <input type="text" class="form-control" name="title" id="title" aria-describedby="title" value="{{ $book->title }}">
                         </div>
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <textarea name="description" class="form-control" id="description"></textarea>
+                            <textarea name="description" class="form-control" id="description">{{ $book->description }}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Athors</label>
@@ -34,6 +35,12 @@
                             </select>
                             <p class="help-block">Caso não encontre o author desejado, <a href="{{ route('author.create') }}" target="_blank">clique aqui</a> para cadastrar um novo</p>
                         </div>
+                        @if(!empty($book->image))
+                        <div class="form-group">
+                            <img src="/images/book/{{ $book->image }}"  width="10%" />
+                            <input type="hidden" name="deleteimage" value="{{ $book->image }}">
+                        </div>
+                        @endif
                         <div class="input-group mb-3">
                             <div class="custom-file">
                                 <input type="file" name="image" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">

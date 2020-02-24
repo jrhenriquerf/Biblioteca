@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Book extends Model
 {
@@ -13,10 +14,10 @@ class Book extends Model
     protected $dates = ['deleted_at'];
 
     public function authors() {
-        return $this->belongsToMany('App\Models\Author', 'book_authors');
+        return $this->belongsToMany('App\Models\Author', 'books_authors');
     }
 
     public function lendings() {
-        return $this->belongsToMany('App\Models\Lending', 'book_lendings');
+        return $this->belongsToMany('App\Models\Lending', 'books_lendings');
     }
 }

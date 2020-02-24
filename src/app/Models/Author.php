@@ -14,6 +14,6 @@ class Author extends Model
     protected $dates = ['deleted_at'];
 
     public function books() {
-        return $this->belongsToMany('App\Models\Book', 'book_authors');
+        return $this->belongsToMany('App\Models\Book', 'books_authors');
     }
 }

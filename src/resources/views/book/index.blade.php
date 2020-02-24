@@ -9,21 +9,19 @@
 
                 <div class="card-body">
                     <form class="form-inline" action="{{ route('book.search') }}" method="GET">
-                        {{ csrf_field() }}                      
+                        {{ csrf_field() }}
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search your book"> 
+                            <input type="text" class="form-control" name="inputSearch" placeholder="Search your book"> 
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
                                 <div class="form-group">
-                                    <select name="book[]" class="form-control selectpicker" data-size="5" multiple="" data-live-search="true" title="Books">
-                                        <?php 
-                                        if(!empty($books)){
-                                            foreach($books as $book){ ?>
-                                                <option value="<?= $book->id ?>" <?= in_array($book->id, $selectedBook) ? "selected" : NULL ; ?>><?= $book->name ?></option>
-                                        <?php }
-                                        } 
-                                        ?>
+                                    <select name="author[]" class="form-control selectpicker" data-size="5" multiple="" data-live-search="true" title="Authors">
+                                        @if(!empty($authors))
+                                            @foreach($authors as $author)
+                                                <option value="{{ $author->id }}" {{ in_array($author->id, $selectedAuthor) ? "selected" : NULL }}>{{ $author->name }} {{ $author->surname ? '(' . $author->surname . ')' : '' }}</option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -41,6 +39,7 @@
                             <th scope="col">Title</th>
                             <th scope="col">Description</th>
                             <th scope="col">Author</th>
+                            <th scope="col" class="text-center">Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -49,7 +48,19 @@
                                     <th scope="row">{{ $book->id }}</th>
                                     <td>{{ $book->title }}</td>
                                     <td>{{ $book->description }}</td>
-                                    <td>{{ $book->author }}</td>
+                                    <td>
+                                        @foreach ($book->authors as $item)
+                                            {{ "{$item->name} ({$item->surname})" }} <br />
+                                        @endforeach
+                                    </td>
+                                    <td width="300" class="text-center">
+                                        <a href="{{ route('book.edit', $book->id) }}" class="btn btn-outline-secondary btn-sm" style="width:50px"><i class="fa fa-pencil"></i></a>
+                                        <form action="{{ route('book.destroy', $book->id) }}" method="POST" style="display: inline-block">
+                                            {{ method_field('DELETE') }}
+                                            {{ csrf_field() }}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" style="width:50px"><i class="fa fa-trash"></i></button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
