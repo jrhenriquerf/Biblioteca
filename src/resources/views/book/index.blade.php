@@ -17,11 +17,11 @@
                             <div class="form-group">
                                 <div class="form-group">
                                     <select name="author[]" class="form-control selectpicker" data-size="5" multiple="" data-live-search="true" title="Authors">
-                                        @if(!empty($authors))
-                                            @foreach($authors as $author)
-                                                <option value="{{ $author->id }}" {{ in_array($author->id, $selectedAuthor) ? "selected" : NULL }}>{{ $author->name }} {{ $author->surname ? '(' . $author->surname . ')' : '' }}</option>
-                                            @endforeach
-                                        @endif
+                                    @if(!empty($authors))
+                                        @foreach($authors as $author)
+                                            <option value="{{ $author->id }}" {{ in_array($author->id, $selectedAuthor) ? "selected" : NULL }}>{{ $author->name . ($author->surname ? " ({$author->surname})" : '') }}</option>
+                                        @endforeach
+                                    @endif
                                     </select>
                                 </div>
                             </div>
@@ -49,9 +49,9 @@
                                     <td>{{ $book->title }}</td>
                                     <td>{{ $book->description }}</td>
                                     <td>
-                                        @foreach ($book->authors as $item)
-                                            {{ "{$item->name} ({$item->surname})" }} <br />
-                                        @endforeach
+                                    @foreach ($book->authors as $item)
+                                        {{ "{$item->name}" . ($item->surname ? " ({$item->surname})" : "") }} <br />
+                                    @endforeach
                                     </td>
                                     <td width="300" class="text-center">
                                         <a href="{{ route('book.edit', $book->id) }}" class="btn btn-outline-secondary btn-sm" style="width:50px"><i class="fa fa-pencil"></i></a>
