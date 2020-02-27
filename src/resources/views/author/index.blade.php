@@ -31,9 +31,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $i = 1;
-                            ?>
+                            <?php $i = 1; ?>
                             @foreach ($authors as $author)
                                 <tr>
                                     <th scope="row">{{ $i }}</th>
@@ -48,9 +46,7 @@
                                         </form>
                                     </td>
                                 </tr>
-                                <?php
-                                $i++;
-                                ?>
+                                <?php $i++; ?>
                             @endforeach
                         </tbody>
                     </table>               

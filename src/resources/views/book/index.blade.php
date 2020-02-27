@@ -43,14 +43,15 @@
                           </tr>
                         </thead>
                         <tbody>
+                            <?php $i = 1; ?>
                             @foreach ($books as $book)
                                 <tr>
-                                    <th scope="row">{{ $book->id }}</th>
+                                    <th scope="row">{{ $i }}</th>
                                     <td>{{ $book->title }}</td>
                                     <td>{{ $book->description }}</td>
                                     <td>
                                     @foreach ($book->authors as $item)
-                                        {{ "{$item->name}" . ($item->surname ? " ({$item->surname})" : "") }} <br />
+                                        {{ "{$item->name}" . ($item->surname ? " ({$item->surname})" : "") }} <br /><hr>
                                     @endforeach
                                     </td>
                                     <td width="300" class="text-center">
@@ -62,6 +63,7 @@
                                         </form>
                                     </td>
                                 </tr>
+                                <?php $i++; ?>
                             @endforeach
                         </tbody>
                     </table>               
