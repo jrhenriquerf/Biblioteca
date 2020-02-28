@@ -11,4 +11,8 @@ class Lending extends Model
     public function users() {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function books() {
+        return $this->belongsToMany('App\Models\Book', 'books_lendings');
+    }
 }

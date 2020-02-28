@@ -20,6 +20,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/book/search', 'BookController@search')->name('book.search');
 Route::get('/author/search', 'AuthorController@search')->name('author.search');
+Route::get('/lending/search', 'LendingController@search')->name('lending.search');
 Route::resource('book', 'BookController');
 Route::resource('lending', 'LendingController');
 Route::resource('author', 'AuthorController');

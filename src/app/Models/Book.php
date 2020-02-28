@@ -13,11 +13,11 @@ class Book extends Model
 
     protected $dates = ['deleted_at'];
 
-    public function authors() {
-        return $this->belongsToMany('App\Models\Author', 'books_authors');
-    }
-
     public function lendings() {
         return $this->belongsToMany('App\Models\Lending', 'books_lendings');
+    }
+
+    public function authors() {
+        return $this->belongsToMany('App\Models\Author', 'books_authors');
     }
 }
