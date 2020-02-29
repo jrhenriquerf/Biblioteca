@@ -101,6 +101,10 @@ return [
         ],
     ],
 
+    'tokens' => [
+        'api' => env('AUTH_API_TOKEN')
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
