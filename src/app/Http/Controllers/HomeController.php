@@ -24,7 +24,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $books = Book::paginate(10);
+        $books = Book::get();
+        
         return view('home', compact('books'));
     }
 }

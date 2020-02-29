@@ -39,9 +39,6 @@
                                     <a class="nav-link" href="{{ route('book.index') }}">{{ __('Books') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('lending.index') }}">{{ __('Locações') }}</a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link" href="{{ route('author.index') }}">{{ __('Authors') }}</a>
                                 </li>
                             @endif

@@ -7,10 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Author;
 use Validator;
+use Storage;
 
 class ApiController extends Controller {
-    private $path = 'images/book';
-
     /**
      * get all books
      *
@@ -37,23 +36,33 @@ class ApiController extends Controller {
      * @param \Illuminate\Http\Request  $request
      * @return mixed
      */
-    public function saveAuthor(Request $request) {
+    public function saveBook(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|min:3|max:255',
+            'title' => 'required|min:3|max:255',
+            'authors' => 'required'
         ]);
 
         if (!$validator->fails()) {
-            $author = Author::create([
-                'name' => $request->input('name'),
-                'surname' => $request->input('surname'),
+            $url = $request->input('image');
+
+            $contents = file_get_contents($url);
+            $namefile = time() . '.' . substr($url, strrpos($url, '.') + 1);
+            Storage::disk("public")->put($namefile, $contents);
+
+            $book = Book::create([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'image' => $namefile
             ]);
 
-            if (!empty($author)) {
-                return response()->json($author, 201);
+            $book->authors()->sync($request->input('authors'));
+
+            if (!empty($book)) {
+                return response()->json($book, 201);
             }
 
             return response()->json([
-                "message" => "Failed to save author"
+                "message" => "Failed to save book"
             ], 500);
         }
 

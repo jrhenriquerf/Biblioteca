@@ -27,7 +27,11 @@ class LendingController extends Controller
      */
     public function index()
     {
-        $lendings = Lending::whereNull('date_finish')->paginate(10);
+        if(Auth::user()->isAdmin()) {
+            $lendings = Lending::whereNull('date_finish')->paginate(10);
+        } else {
+            $lendings = Lending::whereNull('date_finish')->where('user_id', Auth::id())->paginate(10);
+        }
 
         return view('lending.index', compact('lendings'));
     }
@@ -55,7 +59,6 @@ class LendingController extends Controller
         ]);
 
         if (!$validator->fails()) {
-
             $lending = Lending::create([
                 'user_id' => Auth::id(),
                 'date_start' => date('Y-m-d H-i-s'),
@@ -89,23 +92,24 @@ class LendingController extends Controller
     {
         $text = $request->input('inputSearch');
 
-        $lendingsQuery = DB::table('lendings')
-            ->select('lendings.id')
-            ->whereNull('date_finish')
-            ->join('books_lendings', 'lendings.id', '=', 'books_lendings.lending_id')
-            ->join('books', 'books.id', '=', 'books_lendings.book_id')
-            ->where(function ($authors) use ($text) {
-                return $authors->where('books.title', 'like', "%{$text}%")
-                    ->orWhere('lendings.date_start', 'like', "%{$text}%")
-                    ->orWhere('lendings.date_end', 'like', "%{$text}%");
-            })
-            ->get();
+        $query = Lending::whereNull('date_finish');
 
-        $lendings = [];
-        foreach ($lendingsQuery as $key => $value) {
-            $lendings[] = Lending::find($value->id);
+        if (!Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
         }
 
+        if (!empty($text)) {
+            $query->where(function ($authors) use ($text) {
+                return $authors->whereHas('books', function($query) use ($text) {
+                    return $query->where('books.title', 'like', "%{$text}%");
+                })
+                ->orWhere('lendings.date_start', 'like', "%{$text}%")
+                ->orWhere('lendings.date_end', 'like', "%{$text}%");
+            });
+        };
+
+        $lendings = $query->get();
+        
         return view('lending.index', compact('lendings'));
     }
 
@@ -137,6 +141,8 @@ class LendingController extends Controller
             ]);
         }
 
+        if ($request->input('home'))
+            return redirect()->route('home');
         return redirect()->route('lending.index');
     }
 

@@ -25,6 +25,9 @@
                             <th scope="col">Book</th>
                             <th scope="col">Start Date</th>
                             <th scope="col">End Date</th>
+                            @if(Auth::user()->isAdmin())
+                                <th scope="col">User</th>
+                            @endif
                             <th scope="col" class="text-center">Action</th>
                           </tr>
                         </thead>
@@ -36,12 +39,17 @@
                                     <td>{{ $pending->books[0]->title }}</td>
                                     <td>{{ $pending->date_start }}</td>
                                     <td>{{ $pending->date_end }}</td>
+                                    @if(Auth::user()->isAdmin())
+                                        <td>{{ $pending->users->name }}</td>
+                                    @endif
                                     <td width="100" class="text-center">
-                                        <form action="{{ route('lending.update', $pending->id) }}" method="POST" style="display: inline-block">
-                                            {{ method_field('PUT') }}
-                                            {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-outline-danger btn-sm" style="width:100px">Give back</button>
-                                        </form>
+                                        @if($pending->user_id == Auth::id())
+                                            <form action="{{ route('lending.update', $pending->id) }}" method="POST" style="display: inline-block">
+                                                {{ method_field('PUT') }}
+                                                {{ csrf_field() }}
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" style="width:100px">Give back</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                                 <?php $i++; ?>

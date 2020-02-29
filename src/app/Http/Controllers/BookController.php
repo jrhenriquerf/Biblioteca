@@ -21,7 +21,7 @@ class BookController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -106,60 +106,23 @@ class BookController extends Controller
         $text = $request->input('inputSearch');
         $selectedAuthor = $request->input('author');
 
-        $query = DB::table('books')
-            ->select(
-                'books.id',
-                'books.title',
-                'books.image',
-                'books.description',
-                'authors.id as authors'
-            )
-            ->join('books_authors', 'books.id', '=', 'books_authors.book_id')
-            ->join('authors', 'authors.id', '=', 'books_authors.author_id')
-            ->groupBy('books.id', 'books.title', 'books.description', 'books.image', 'authors.id');
-        
+        $query = new Book();
+
         if(!empty($text)) {
-            $query->where(function ($query) use ($text) {
+            $query = $query->where(function ($query) use ($text) {
                 return $query->where('books.title', 'like', "%{$text}%")
                     ->orWhere('books.description', 'like', "%{$text}%");
             });
         }
 
         if(!empty($selectedAuthor)) {
-            $query->whereIn('authors.id', $selectedAuthor);
+            $query = $query->whereHas('authors', function ($query) use ($selectedAuthor) {
+                return $query->whereIn('id', $selectedAuthor);
+            });
         }
 
         $authors = Author::get();
-        $oldBooks = $query->get();
-        $books = [];
-
-        foreach ($oldBooks as $keyFather => $valueFather) {
-            foreach ($oldBooks as $key => $value) {
-                if ($keyFather === $key)
-                    continue;
-
-                if ($valueFather->id === $value->id && 
-                    !in_array($valueFather->id, array_column($books, 'id'))) {
-                    $oldBooks[$keyFather]->authors = array_merge([$valueFather->authors], [$value->authors]);
-                    continue;
-                }
-            }
-
-            if (!in_array($valueFather->id, array_column($books, 'id'))) {
-                $books[] = $valueFather;
-            }
-        }
-
-        foreach ($books as $key => $value) {
-            if (is_array($value->authors)) {
-                foreach ($value->authors as $k => &$author) {
-                    $author = Author::find($author);
-                }
-                continue;
-            }
-                
-            $value->authors = [Author::find($value->authors)];
-        }
+        $books = $query->get();
 
         if (empty($selectedAuthor)) {
             $selectedAuthor = [];
