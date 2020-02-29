@@ -37,7 +37,7 @@
                         </div>
                         @if(!empty($book->image))
                         <div class="form-group">
-                            <img src="/images/book/{{ $book->image }}"  width="10%" />
+                            <img src="/storage/books/{{ $book->image }}"  width="10%" />
                             <input type="hidden" name="deleteimage" value="{{ $book->image }}">
                         </div>
                         @endif

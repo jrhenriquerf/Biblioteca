@@ -7,10 +7,11 @@ use App\Models\Author;
 use Illuminate\Http\Request;
 use Validator;
 use DB;
+use Storage;
 
 class BookController extends Controller
 {
-    private $path = 'images/book';
+    private $path = 'books';
     
     /**
      * Create a new controller instance.
@@ -29,7 +30,7 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::paginate(10);
+        $books = Book::paginate(15);
         $authors = Author::get();
         $selectedAuthor = [];
 
@@ -67,9 +68,8 @@ class BookController extends Controller
             $image = $request->file('image');
 
             if (!empty($image)) {
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move($this->path, $fileName);
-                $imageFileName = $fileName;
+                $imageFileName = time() . '.' . $image->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs($this->path, $image, $imageFileName);
             }
 
             $book = Book::create([
@@ -179,16 +179,17 @@ class BookController extends Controller
                 $authors = $request->input('authors');
                 $title = $request->input('title');
                 $description = $request->input('description');
+                $storage = Storage::disk('public');
         
                 if(!empty($deleteImage)) {
                     $imagePath = $this->path . '/' . $deleteImage;
-                    if(file_exists($imagePath))
-                        unlink($imagePath);
+                    if($storage->exists($imagePath))
+                        $storage->delete($imagePath);
                 }
 
                 if(!empty($image) && $image->isValid()) {
                     $imageFileName = time() . '.' . $image->getClientOriginalExtension();
-                    $image->move($this->path, $imageFileName);
+                    $storage->putFileAs($this->path, $image, $imageFileName);
                 }
                 
                 $book->update([

@@ -17,7 +17,7 @@
                         @endif
                             <? $c++; ?>
                             <div class="card">
-                                <img src="{{ asset('/images/book/' . $book->image) }}" class="card-img-top" alt="..." width="100" height="300">
+                                <img src="{{ asset('/storage/books/' . $book->image) }}" class="card-img-top" alt="..." width="100" height="300">
                                 <div class="card-body" style="margin-bottom: 50px">
                                     <h5 class="card-title">{{ $book->title }}</h5>
                                     <p class="card-text">{{ $book->description }}</p>

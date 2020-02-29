@@ -47,7 +47,7 @@ class ApiController extends Controller {
 
             $contents = file_get_contents($url);
             $namefile = time() . '.' . substr($url, strrpos($url, '.') + 1);
-            Storage::disk("public")->put($namefile, $contents);
+            Storage::disk("public")->put('books/' . $namefile, $contents);
 
             $book = Book::create([
                 'title' => $request->input('title'),
