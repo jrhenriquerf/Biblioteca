@@ -28,3 +28,21 @@ Para rodar o projeto siga os passos a seguir:
 
 ### Finalizando
 - Após realizar os passos descritos o projeto será rodado em http://localhost:8091/ e será possível abrir o banco de dados atráves do phpmyadmin (http://localhost:8083/) com o usuário e senha configurados no docker-compose (**usuário:** developer, **senha:** biblioteca)
+
+## Testando a API
+As rotas desenvolvidas como API são:
+- **POST** - `localhost:8091/api/v1/save_book`: Para cadastrar um novo livro utilizando o body abaixo
+```
+{
+	"title": "Título do livro",
+	"description": "Descrição do livro",
+	"authors": ["1", "2", "3"],
+	"image": "link da imagem"
+}
+```
+
+- **GET** - `localhost:8091/api/v1/authors`: Para buscar todos os autores
+- **GET** - `localhost:8091/api/v1/books`: Para buscar todos os livros
+
+
+**Obs.:** Todas devem receber o `Authorization` com o token no header.
