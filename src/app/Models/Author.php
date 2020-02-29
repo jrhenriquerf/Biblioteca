@@ -17,7 +17,7 @@ class Author extends Model
         return $this->belongsToMany('App\Models\Book', 'books_authors');
     }
 
-    public function getNameAttribute($name) {
+    public function getSurnameAttribute($name) {
         if ($this->trashed()) {
             return "{$name} (Deleted)";
         }

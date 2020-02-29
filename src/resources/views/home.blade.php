@@ -25,7 +25,7 @@
                                         <small class="text-muted">
                                             Author(s): 
                                             @foreach ($book->authors as $key => $item)
-                                                {{ "{$item->name}" . ($item->surname ? " ({$item->surname})" : "") . ($key != count($book->authors) - 1 ? ',' : '') }}
+                                                {{ str_replace("(Deleted)", "", $item->name) . ($item->surname ? " " . str_replace("(Deleted)", "", $item->surname) : "") . ($key != count($book->authors) - 1 ? ',' : '') }}
                                             @endforeach
                                         </small>
                                     </p>
