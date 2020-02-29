@@ -3,9 +3,10 @@
 Projeto de um sistema de biblioteca para a aula de PHP Avançado da Pós Graduação utilizando Laravel.
 
 ## Dependências
-- Composer
-- Docker
-- PHP
+- [Composer](https://getcomposer.org/)
+- [Docker](https://www.docker.com/get-started)
+- [PHP](https://www.php.net/downloads)
+- [Node](https://nodejs.org/en/)
 
 ## Instruções
 Para rodar o projeto siga os passos a seguir:
