@@ -31,7 +31,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::paginate(15);
-        $authors = Author::get();
+        $authors = Author::withTrashed()->get();
         $selectedAuthor = [];
 
         return view('book.index', compact('books', 'authors', 'selectedAuthor'));
@@ -121,7 +121,7 @@ class BookController extends Controller
             });
         }
 
-        $authors = Author::get();
+        $authors = Author::withTrashed()->get();
         $books = $query->get();
 
         if (empty($selectedAuthor)) {
