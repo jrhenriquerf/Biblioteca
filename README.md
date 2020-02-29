@@ -15,9 +15,9 @@ Para rodar o projeto siga os passos a seguir:
 ### Configurações dos conteiners
 - Rode o comando `docker-compose up -d` na pasta do projeto
 - Entre na conteiner do php rodando o comando `docker exec -it biblioteca-php bash`
-- Rode os seguintes comandos 
-- Para gerar a chave: `php artisan key:generate`
-- Para criar as tabelas no banco de dados: `php artisan migrate`
+- Rode os seguintes comandos:
+    - Para gerar a chave: `php artisan key:generate`
+    - Para criar as tabelas no banco de dados: `php artisan migrate`
 
 ### Baixar as dependências
 - Entre na pasta `src` e rode os seguintes comandos
