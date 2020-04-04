@@ -1,27 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Shared;
 
-use App\Http\Controllers\Shared\AuthorController as SharedAuthor;
 use App\Models\Author;
 use Illuminate\Http\Request;
 use Validator;
 use DB;
 
-class AuthorController extends Controller
+class AuthorController
 {
-    private $sharedAuthor;
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->sharedAuthor = new SharedAuthor();
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +16,8 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $sharedAuthor->index();
+        $authors = Author::paginate(15);
+        return view('author.index', compact('authors'));
     }
 
     /**
