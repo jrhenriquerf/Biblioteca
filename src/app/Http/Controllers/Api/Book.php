@@ -73,9 +73,9 @@ class Book extends Controller
             $book = $this->sharedBook->edit($bookId);
 
             return response()->json($book, 200);
-        } catch (\Throwable $th) {
+        } catch (Exception $err) {
             return response()->json((object) [ 
-                'message' => 'Book not found' 
+                'message' => $err->getMessage()
             ], 406);
         }
     }
@@ -114,7 +114,7 @@ class Book extends Controller
             return response()->json(null, 204);
         } catch (Exception $err) {
             return response()->json((object) [ 
-                'message' => $err->getMessage() 
+                'message' => $err->getMessage()
             ], 500);
         }
     }

@@ -73,9 +73,9 @@ class Author extends Controller
             $author = $this->sharedAuthor->edit($authorId);
 
             return response()->json($author, 200);
-        } catch (\Throwable $th) {
+        } catch (Exception $err) {
             return response()->json((object) [ 
-                'message' => 'Author not found' 
+                'message' => $err->getMessage()
             ], 406);
         }
     }

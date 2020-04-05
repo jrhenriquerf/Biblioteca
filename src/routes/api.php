@@ -39,4 +39,11 @@ Route::middleware('auth.token')->prefix('/v1')->group(function () {
         Route::put('/{id}', 'Api\\Book@update');
         Route::delete('/{id}', 'Api\\Book@destroy');
     });
+
+    Route::prefix('lending')->group(function () {
+        Route::get('/', 'Api\\Lending@index');
+        Route::post('/', 'Api\\Lending@store');
+        Route::get('/search', 'Api\\Lending@search');
+        Route::put('/{id}', 'Api\\Lending@update');
+    });
 });

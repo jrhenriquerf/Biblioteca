@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lending;
+use App\Http\Controllers\Shared\LendingController as SharedLending;
 use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Support\Facades\Auth;
-use DB;
 
 class LendingController extends Controller
 {
@@ -27,11 +24,7 @@ class LendingController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->isAdmin()) {
-            $lendings = Lending::whereNull('date_finish')->paginate(10);
-        } else {
-            $lendings = Lending::whereNull('date_finish')->where('user_id', Auth::id())->paginate(10);
-        }
+        $lendings = $this->sharedLending->index();
 
         return view('lending.index', compact('lendings'));
     }
@@ -54,19 +47,9 @@ class LendingController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'book_id' => 'required',
-        ]);
-
-        if (!$validator->fails()) {
-            $lending = Lending::create([
-                'user_id' => Auth::id(),
-                'date_start' => date('Y-m-d H-i-s'),
-                'date_end' => date('Y-m-d', strtotime("+7 day", strtotime(date('Y-m-d')))) . " 23:59:59",
-            ]);
-
-            $lending->books()->sync($request->input('book_id'));
-        }
+        try {
+            $lendings = $this->sharedLending->store($request);
+        } catch (Exception $err) { }
 
         return redirect()->route('home');
     }
@@ -90,26 +73,8 @@ class LendingController extends Controller
      */
     public function search(Request $request)
     {
-        $text = $request->input('inputSearch');
+        $lendings = $this->sharedLending->search($request);
 
-        $query = Lending::whereNull('date_finish');
-
-        if (!Auth::user()->isAdmin()) {
-            $query->where('user_id', Auth::id());
-        }
-
-        if (!empty($text)) {
-            $query->where(function ($authors) use ($text) {
-                return $authors->whereHas('books', function($query) use ($text) {
-                    return $query->where('books.title', 'like', "%{$text}%");
-                })
-                ->orWhere('lendings.date_start', 'like', "%{$text}%")
-                ->orWhere('lendings.date_end', 'like', "%{$text}%");
-            });
-        };
-
-        $lendings = $query->get();
-        
         return view('lending.index', compact('lendings'));
     }
 
@@ -133,13 +98,9 @@ class LendingController extends Controller
      */
     public function update(Request $request, int $lendingId)
     {
-        $lendingUpdt = Lending::find($lendingId);
-
-        if (!empty($lendingUpdt)) {
-            $lendingUpdt->update([
-                'date_finish' => date('Y-m-d H-i-s'),
-            ]);
-        }
+        try {
+            $this->sharedLending->update($request, $lendingId);
+        } catch (Exception $err) { }
 
         if ($request->input('home'))
             return redirect()->route('home');

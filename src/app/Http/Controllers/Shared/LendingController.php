@@ -8,18 +8,8 @@ use Validator;
 use Illuminate\Support\Facades\Auth;
 use DB;
 
-class LendingController extends Controller
+class LendingController
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -27,23 +17,10 @@ class LendingController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->isAdmin()) {
-            $lendings = Lending::whereNull('date_finish')->paginate(10);
-        } else {
-            $lendings = Lending::whereNull('date_finish')->where('user_id', Auth::id())->paginate(10);
-        }
+        if(Auth::user()->isAdmin())
+            return Lending::whereNull('date_finish')->paginate(10);
 
-        return view('lending.index', compact('lendings'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Lending::whereNull('date_finish')->where('user_id', Auth::id())->paginate(10);
     }
 
     /**
@@ -66,20 +43,11 @@ class LendingController extends Controller
             ]);
 
             $lending->books()->sync($request->input('book_id'));
+
+            return $lending;
         }
 
-        return redirect()->route('home');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Lending  $lending
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Lending $lending)
-    {
-        //
+        throw new Exception("Validation failed", 1);
     }
 
     /**
@@ -108,20 +76,7 @@ class LendingController extends Controller
             });
         };
 
-        $lendings = $query->get();
-
-        return view('lending.index', compact('lendings'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Lending  $lending
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Lending $lending)
-    {
-        //
+        return $query->get();
     }
 
     /**
@@ -139,21 +94,10 @@ class LendingController extends Controller
             $lendingUpdt->update([
                 'date_finish' => date('Y-m-d H-i-s'),
             ]);
+
+            return;
         }
 
-        if ($request->input('home'))
-            return redirect()->route('home');
-        return redirect()->route('lending.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Lending  $lending
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Lending $lending)
-    {
-        //
+        throw new Exception("Lending not found", 1);
     }
 }
