@@ -9,52 +9,25 @@ use Validator;
 use DB;
 use Storage;
 
-class BookController extends Controller
+class BookController
 {
     private $path = 'books';
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Book
      */
     public function index()
     {
-        $books = Book::paginate(15);
-        $authors = Author::withTrashed()->get();
-        $selectedAuthor = [];
-
-        return view('book.index', compact('books', 'authors', 'selectedAuthor'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $authors = Author::get();
-        $selectedAuthor = [];
-
-        return view('book.add', compact('authors', 'selectedAuthor'));
+        return Book::paginate(15);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return Book
      */
     public function store(Request $request)
     {
@@ -79,27 +52,18 @@ class BookController extends Controller
             ]);
 
             $book->authors()->sync($request->input('authors'));
+
+            return $book;
         }
 
-        return redirect()->route('book.index');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Book  $book
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Book $book)
-    {
-        //
+        throw new Exception("Validation failed", 1);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return object
      */
     public function search(Request $request)
     {
@@ -121,48 +85,34 @@ class BookController extends Controller
             });
         }
 
-        $authors = Author::withTrashed()->get();
-        $books = $query->get();
-
-        if (empty($selectedAuthor)) {
-            $selectedAuthor = [];
-        }
-
-        return view('book.index', compact('books', 'authors', 'selectedAuthor'));
+        return $query->get();
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $bookId
-     * @return \Illuminate\Http\Response
+     * @return Book
      */
     public function edit(int $bookId)
     {
         $book = Book::find($bookId);
 
         if(!empty($book)) {
-            $authors = Author::get();
-            $selectedAuthor = [];
-
-            foreach ($book->authors as $key => $author) {
-                $selectedAuthor[] = $author->pivot->author_id;
-            }
-
-            return view('book.edit', compact('book', 'authors', 'selectedAuthor'));
+            return $book;
         }
 
-        return redirect()->route('book.index');
+        throw new Exception("Book not found", 1);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Book  $book
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Book  $book
+     * @return null
      */
-    public function update(Request $request, Book $book)
+    public function update(Request $request, int $bookId)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:3|max:255',
@@ -170,7 +120,7 @@ class BookController extends Controller
         ]);
 
         if(!$validator->fails()) {
-            $book = Book::find($book->id);
+            $book = Book::find($bookId);
 
             if(!empty($book)) {
                 $imageFileName = '';
@@ -200,20 +150,20 @@ class BookController extends Controller
 
                 $book->authors()->sync($authors);
 
-                return redirect()->route('book.index');
+                return;
             }
 
-            return redirect()->route('book.edit');
+            throw new Exception("Book not found", 1);
         }
 
-        return redirect()->route('book.edit');
+        throw new Exception("Validation failed", 1);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $bookId
-     * @return \Illuminate\Http\Response
+     * @return null
      */
     public function destroy(int $bookId)
     {
@@ -230,8 +180,10 @@ class BookController extends Controller
             $book->authors()->detach();
             $book->lendings()->detach();
             $book->delete();
+
+            return;
         }
 
-        return redirect()->route('book.index');
+        throw new Exception("Book not found", 1);
     }
 }

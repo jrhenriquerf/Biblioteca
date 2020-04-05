@@ -73,7 +73,12 @@ class AuthorController
      */
     public function edit(int $authorId)
     {
-        return Author::find($authorId);
+        $author = Author::find($authorId);
+
+        if (!$author)
+            throw new Exception("Author not found", 1);
+
+        return $author;
     }
 
     /**

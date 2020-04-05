@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Shared\AuthorController as SharedAuthor;
+use App\Http\Controllers\Shared\BookController as SharedBook;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class Author extends Controller 
+class Book extends Controller 
 {
-    private $sharedAuthor;
+    private $sharedBook;
 
     /**
      * Create a new controller instance.
@@ -17,7 +17,7 @@ class Author extends Controller
      */
     public function __construct()
     {
-        $this->sharedAuthor = new SharedAuthor();
+        $this->sharedBook = new SharedBook();
     }
 
     /**
@@ -26,7 +26,7 @@ class Author extends Controller
      * @return mixed
      */
     public function index() {
-        return response()->json($this->sharedAuthor->index(), 200);
+        return response()->json($this->sharedBook->index(), 200);
     }
 
     /**
@@ -38,9 +38,9 @@ class Author extends Controller
     public function store(Request $request)
     {
         try {
-            $author = $this->sharedAuthor->store($request);
+            $book = $this->sharedBook->store($request);
 
-            return response()->json(null, 201);
+            return response()->json($book, 201);
         } catch (Exception $err) {
             return response()->json((object) [
                 "message" => $err->getMessage()
@@ -56,26 +56,26 @@ class Author extends Controller
      */
     public function search(Request $request)
     {
-        $authors = $this->sharedAuthor->search($request);
+        $books = $this->sharedBook->search($request);
 
-        return response()->json($authors, 200);
+        return response()->json($books, 200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $authorId
+     * @param  int $bookId
      * @return \Illuminate\Http\Response
      */
-    public function edit(int $authorId)
+    public function edit(int $bookId)
     {
         try {
-            $author = $this->sharedAuthor->edit($authorId);
+            $book = $this->sharedBook->edit($bookId);
 
-            return response()->json($author, 200);
+            return response()->json($book, 200);
         } catch (\Throwable $th) {
             return response()->json((object) [ 
-                'message' => 'Author not found' 
+                'message' => 'Book not found' 
             ], 406);
         }
     }
@@ -84,13 +84,13 @@ class Author extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Author  $author
+     * @param  int  $bookId
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $authorId)
+    public function update(Request $request, int $bookId)
     {
         try {
-            $this->sharedAuthor->update($request, $authorId);
+            $this->sharedBook->update($request, $bookId);
 
             return response()->json(null, 204);
         } catch (Exception $err) {
@@ -103,13 +103,13 @@ class Author extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $authorId
+     * @param  int $bookId
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $authorId)
+    public function destroy(int $bookId)
     {
         try {
-            $this->sharedAuthor->destroy($authorId);
+            $this->sharedBook->destroy($bookId);
 
             return response()->json(null, 204);
         } catch (Exception $err) {
