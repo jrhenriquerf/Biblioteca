@@ -13,11 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/register', 'Auth\\AuthController@register');
+Route::post('/login', 'Auth\\AuthController@login');
+Route::post('/logout', 'Auth\\AuthController@logout');
 
-Route::middleware('auth.token')->prefix('/v1')->group(function () {
+Route::middleware('jwt.verify')->prefix('/v1')->group(function () {
     Route::get('books', 'Api\\ApiController@books');
     Route::get('authors', 'Api\\ApiController@authors');
     Route::post('save_book', 'Api\\ApiController@saveBook');

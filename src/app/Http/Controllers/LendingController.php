@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class LendingController extends Controller
 {
+    private $sharedLending;
+
     /**
      * Create a new controller instance.
      *
@@ -15,6 +17,7 @@ class LendingController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->sharedLending = new SharedLending();
     }
     
     /**
