@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Shared\AuthorController as SharedAuthor;
-use App\Models\Author;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
-use DB;
 
-class AuthorController extends Controller
+class Author extends Controller 
 {
     private $sharedAuthor;
 
@@ -19,29 +17,16 @@ class AuthorController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
         $this->sharedAuthor = new SharedAuthor();
     }
 
     /**
-     * Display a listing of the resource.
+     * Get home books
      *
-     * @return \Illuminate\Http\Response
+     * @return mixed
      */
-    public function index()
-    {
-        $authors = $this->sharedAuthor->index();
-        return view('author.index', compact('authors'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('author.add');
+    public function index() {
+        return response()->json($this->sharedAuthor->index(), 200);
     }
 
     /**
@@ -52,20 +37,15 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $this->sharedAuthor->store($request);
-        
-        return redirect()->route('author.index');
-    }
+        try {
+            $author = $this->sharedAuthor->store($request);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Author  $author
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Author $author)
-    {
-        //
+            return response()->json(null, 201);
+        } catch (Exception $err) {
+            return response()->json((object) [
+                "message" => $err->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -77,7 +57,8 @@ class AuthorController extends Controller
     public function search(Request $request)
     {
         $authors = $this->sharedAuthor->search($request);
-        return view('author.index', compact('authors'));
+
+        return response()->json($authors, 200);
     }
 
     /**
@@ -91,10 +72,10 @@ class AuthorController extends Controller
         $author = $this->sharedAuthor->edit($authorId);
 
         if (!$author) {
-            return redirect()->route('author.index');
+            return response()->json((object) [ 'message' => 'Author not found' ], 406);
         }
 
-        return view('author.edit', compact('author'));
+        return response()->json($author, 200);
     }
 
     /**
@@ -104,14 +85,16 @@ class AuthorController extends Controller
      * @param  \App\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Author $author)
+    public function update(Request $request, int $authorId)
     {
         try {
-            $this->sharedAuthor->update($request, $author->id);
+            $this->sharedAuthor->update($request, $authorId);
 
-            return redirect()->route('author.index');
+            return response()->json(null, 204);
         } catch (Exception $err) {
-            return view('author.edit', compact('author'));
+            return response()->json((object) [ 
+                'message' => $err->getMessage() 
+            ], 500);
         }
     }
 
@@ -125,8 +108,12 @@ class AuthorController extends Controller
     {
         try {
             $this->sharedAuthor->destroy($authorId);
-        } catch (Exception $err) { }
 
-        return redirect()->route('author.index');
+            return response()->json(null, 204);
+        } catch (Exception $err) {
+            return response()->json((object) [ 
+                'message' => $err->getMessage() 
+            ], 500);
+        }
     }
 }

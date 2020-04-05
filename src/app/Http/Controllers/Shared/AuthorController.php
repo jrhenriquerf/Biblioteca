@@ -6,6 +6,7 @@ use App\Models\Author;
 use Illuminate\Http\Request;
 use Validator;
 use DB;
+use Exception;
 
 class AuthorController
 {
@@ -17,24 +18,13 @@ class AuthorController
     public function index()
     {
         $authors = Author::paginate(15);
-        return view('author.index', compact('authors'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('author.add');
+        return $authors;
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -47,20 +37,11 @@ class AuthorController
                 'name' => $request->input('name'),
                 'surname' => $request->input('surname'),
             ]);
+
+            return;
         }
 
-        return redirect()->route('author.index');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Author  $author
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Author $author)
-    {
-        //
+        throw new Exception("Falha na validação dos dados");
     }
 
     /**
@@ -81,7 +62,7 @@ class AuthorController
             })
             ->get();
 
-        return view('author.index', compact('authors'));
+        return $authors;
     }
 
     /**
@@ -92,13 +73,7 @@ class AuthorController
      */
     public function edit(int $authorId)
     {
-        $author = Author::find($authorId);
-
-        if (!$author) {
-            return redirect()->route('author.index');
-        }
-
-        return view('author.edit', compact('author'));
+        return Author::find($authorId);
     }
 
     /**
@@ -108,7 +83,7 @@ class AuthorController
      * @param  \App\Author  $author
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Author $author)
+    public function update(Request $request, int $authorId)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:3|max:255',
@@ -117,7 +92,7 @@ class AuthorController
         $name = $request->input('name');
         $surname = $request->input('surname');
 
-        $authorUpdt = Author::find($author->id);
+        $authorUpdt = Author::find($authorId);
 
         if (!$validator->fails()) {
             if (!empty($authorUpdt)) {
@@ -126,11 +101,13 @@ class AuthorController
                     'surname' => $request->input('surname'),
                 ]);
 
-                return redirect()->route('author.index');
+                return;
             }
+
+            throw new Exception('Author not found');
         }
 
-        return view('author.edit', compact('author'));
+        throw new Exception('Validation data failed!');
     }
 
     /**
@@ -145,8 +122,10 @@ class AuthorController
 
         if(!empty($authorId)) {
             $authorDlt->delete();
+
+            return;
         }
 
-        return redirect()->route('author.index');
+        throw new Exception("Author not found", 1);
     }
 }
